@@ -25,15 +25,15 @@ def main():
     df = load_data()       
     print(df.head())
 
+    get_user_input(df)
     # Generate and display plots based on the final DataFrame
     get_plots(df)
 
 
 
 def load_data():
-
-        """ ----------- Importing Data Files ------------
-        """
+        # ----------- Importing Data Files ------------
+        
         census_init = pd.read_csv('data/2021_Federal_Census_Population_and_Dwellings_by_Community_20250611.csv')
         assessment_init = pd.read_csv('data/Assessments_by_Community_20250609.csv')
         business_init = pd.read_csv('data/Calgary_Business_Licences_20250611.csv')
@@ -47,8 +47,8 @@ def load_data():
         # print(crime_init['Category'].unique())
         # Print(crime_init['Year'].unique())
 
-        """ ----------- Clean Data Files ------------
-        """
+        # ----------- Clean Data Files ------------
+        
 
         # Keep only total and gender total columns
         census = census_init.drop(census_init.columns[3:53], axis=1)
@@ -101,8 +101,7 @@ def load_data():
         crime = crime_init
         # print(crime.isnull().any())
 
-        """ ----------- Merge Data Files ------------
-        """
+        # ----------- Merge Data Files ------------
 
         ## Merge 1 wards plus business --------------------
         print("wards size:", wards.shape)
@@ -174,6 +173,7 @@ def load_data():
             'TOTAL_POP_MEN': 'Population Men',
             'TOTAL_POP_WOMEN': 'Population Women'
         })
+
         # print first five rows
         final_df.head()
 
@@ -188,81 +188,84 @@ def get_plots(final_df):
     Args:
         final_df (DataFrame): The final DataFrame containing the cleaned and merged data.
     """
-   
-    # ----- Plot #1 Total Crime Per Year By Crime Category -----
-    
 
+    # Create a single figure with 3 subplots (3 rows, 1 column)
+    fig, axes = plt.subplots(3, 1, figsize=(10, 18))  # Adjust height for spacing
+
+    # ---------------- Plot 1: Total Crime Count Per Year by Crime Category ----------------
     # Group by Category and Year, then sum Crime Count
     plot1_df = final_df.groupby(['Category', 'Year'])['Crime Count'].sum().reset_index()
-
     # Create a pivot table where rows = Year, columns = Category, values = total crime count
     plot1_pt = plot1_df.pivot(index='Year', columns='Category', values='Crime Count')
-
     # Plot each category's crime trend across years
-    plot1_pt.plot(kind='line', marker='o', figsize=(12, 8))
-    plt.title('Total Crime Count Per Year')
-    plt.xlabel('Year')
-    plt.ylabel('Total Crime Count')
-    plt.grid(True)
-    plt.legend(title='Crime Category', bbox_to_anchor=(1, 1), loc='upper right')
-    plt.tight_layout()
-    plt.show()
+    plot1_pt.plot(kind='line', marker='o', ax=axes[0])
+    axes[0].set_title('Total Crime Count Per Year')
+    axes[0].set_xlabel('Year')
+    axes[0].set_ylabel('Total Crime Count')
+    axes[0].grid(True)
+    axes[0].legend(title='Crime Category', fontsize='small', loc='upper left')
 
-    # -----Plot #2 Total Crime Per Month Per Year -----
-   
+    # ---------------- Plot 2: Total Crime Per Month by Year ----------------
     # Group by Year and Month, then sum Crime Count
     plot2_df = final_df.groupby(['Year', 'Month'])['Crime Count'].sum().reset_index()
-
-    # Pivot so rows = Month, columns = Year
+    # Create a pivot table where rows = Month, columns = Year, values = total crime count
     plot2_pt = plot2_df.pivot(index='Month', columns='Year', values='Crime Count')
-
     # Replace all 0s with NaN and drop years (columns) where all values are NaN
     plot2_pt = plot2_pt.replace(0, np.nan).dropna(axis=1, how='all')
-
     # Plot total crime per month for each year
-    plot2_pt.plot(kind='line', marker='o', figsize=(12, 6))
+    plot2_pt.plot(kind='line', marker='o', ax=axes[1])
+    axes[1].set_title('Total Crime Per Month by Year')
+    axes[1].set_xlabel('Month')
+    axes[1].set_ylabel('Total Crime Count')
+    axes[1].set_xticks(range(1, 13))
+    axes[1].grid(True)
+    axes[1].legend(title='Year', fontsize='small', loc='upper left')
 
-    plt.title('Total Crime Per Month by Year')
-    plt.xlabel('Month')
-    plt.ylabel('Total Crime Count')
-    plt.xticks(range(1, 13))
-    plt.grid(True)
-    plt.legend(title='Year', bbox_to_anchor=(1, 1), loc='upper right')
-    plt.tight_layout()
-    plt.show()
-
-    
-    # ----- Plot #3: Percent change of crime compared to previous year -----
-   
-
+    # ---------------- Plot 3: Year-over-Year % Change in Total Crime ----------------
     # Group by Year and get Total of Crime Count
     plot3_df = final_df.groupby('Year')['Crime Count'].sum().sort_index()
-
     # Remove years with 0 or NaN crime count
-    plot3_df = plot3_df[plot3_df > 0]  # removes 0 and NaN
-
+    plot3_df = plot3_df[plot3_df > 0]
     # Compute percent change
-    plot3_df = plot3_df.pct_change() * 100  # convert to percent
+    plot3_pct_change = plot3_df.pct_change() * 100
+    plot3_pct_change.dropna().plot(kind='bar', ax=axes[2], color='coral')
+    axes[2].set_title('YoY % Change in Total Crime')
+    axes[2].set_xlabel('Year')
+    axes[2].set_ylabel('Percent Change (%)')
+    axes[2].axhline(0, color='gray', linestyle='--')
+    axes[2].grid(axis='y')
 
-    # Plot
-    plt.figure(figsize=(10, 5))
-    plot3_df.dropna().plot(kind='bar', color='coral')
-
-    plt.title('Year-over-Year % Change in Total Crime (Excludes Zero-Crime Years)')
-    plt.xlabel('Year')
-    plt.ylabel('Percent Change (%)')
-    plt.axhline(0, color='gray', linestyle='--')  # Reference line at 0%
-    plt.grid(axis='y')
+    # ---------------- Layout adjustment ----------------
     plt.tight_layout()
     plt.show()
 
    
 
-def get_user_input():
-    """
-    Placeholder for user input functionality.
-    This function can be expanded to gather parameters or options from the user.
-    """
+def get_user_input(df):
+    # Get unique valid values
+    valid_community_codes = df['Community Code'].unique()
+    valid_years = df['Year'].unique()
+
+    # Get and validate community code
+    print(f"Community Codes: {', '.join(map(str, valid_community_codes))}")
+    while True:
+        community_code = input("Enter a valid Community Code (e.g. ): ").strip()
+        if community_code in valid_community_codes:
+            break
+        print(f"Invalid code. Available codes: {', '.join(map(str, valid_community_codes))}")
+
+    # Get and validate year
+    print(f"Available years: {', '.join(map(str, valid_years))}")
+    while True:
+        year_input = input("Enter a valid Year (e.g., 2022): ").strip()
+        if year_input.isdigit():
+            year = int(year_input)
+            if year in valid_years:
+                break
+        print(f"Invalid year. Available years: {', '.join(map(str, sorted(valid_years)))}")
+
+    return community_code, year
+
     pass  # Implement user input logic here if needed
 
 
