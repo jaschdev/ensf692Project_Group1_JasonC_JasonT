@@ -92,7 +92,7 @@ def plot_crime_count(final_df, location, year, location_type):
     # Plot on second subplot
     pivot_table.plot(kind='line', marker='o', ax=axes[1])
 
-    axes[1].set_title('Total Crime Per Month by Year')
+    axes[1].set_title('Total Crime Per Month by Year (For all of Calgary)')
     axes[1].set_xlabel('Month')
     axes[1].set_ylabel('Total Crime Count')
     axes[1].set_xticks(range(1, 13))

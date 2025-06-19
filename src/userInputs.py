@@ -42,7 +42,7 @@ def get_year(df):
         # ensure dataframe of breed column only has upper case names
         try:
             if (year not in df['Year'].values):
-                raise KeyError('This year was not found in the data. Please try again.')
+                raise KeyError('\nThis year was not found in the data. Please try again.\n')
             if year in df['Year'].values:
                 return df.loc[df['Year'] == year, 'Year'].iloc[0]
             elif year == 'Q':
@@ -57,7 +57,7 @@ def get_ward(df):
         # ensure dataframe of breed column only has upper case names
         try:
             if (ward not in df['Ward Number'].values):
-                raise KeyError('This city ward was not found in the data. Please try again.')
+                raise KeyError('\nThis city ward was not found in the data. Please try again.\n')
             if ward in df['Ward Number'].values:
                 return df.loc[df['Ward Number'] == ward, 'Ward Number'].iloc[0]
             elif ward == 'Q':
@@ -77,6 +77,6 @@ def get_sector(df):
             elif sector == 'CITYCENTRE':
                 return 'CENTRE'
             elif (sector not in df['Sector'].values):
-                raise KeyError('This city sector was not found in the data. Please try again.')
+                raise KeyError('\nThis city sector was not found in the data. Please try again.\n')
         except KeyError as e:
             print(e.args[0])

@@ -20,7 +20,20 @@ import pandas as pd
 #     return df
 
 
+
 def create_dataframe():
+    """
+    Summary: This functions imports multiple data files, cleans them, and merges them into a single DataFrame.
+
+    Returns: final_df: A cleaned and merged DataFrame with the following columns:
+            - Community Code, Community, Year, Month, Sector, Ward Number
+            - Category, Crime Count, Community Crime MTD Total
+            - Businesses Opened, Community Businesses Opened TD Total
+            - Taxable Accounts, Median Assessed Value, Population Household
+            - Crime per Capita 1000
+    """
+
+
     # ----------- Importing Data Files ------------
         
     census2016_init = pd.read_csv('data/Census_by_Community_2016_20250617.csv')

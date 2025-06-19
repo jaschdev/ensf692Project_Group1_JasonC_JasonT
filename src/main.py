@@ -25,9 +25,8 @@ def main():
 
     print(" --------- Start Crime Statistics Visualizer ---------")
     print("\nWelcome to Calgary Crime Statistic Visualizer!\n" \
-    "\nIn this program, you will be able to view basic Calgary crime statistics from the years 2018 to 2024" \
-    "\nIn choosing a specified location/region within calgary such as a community as well as a year," \
-    "\nyou will be able to see the data relating to the chosen values for a number of comaprisons including" \
+    "\nIn this program, you will be able to view Calgary's basic crime statistics from the years 2018 to 2024" \
+    "\nSelect a year and location/region within Calgary, and you will see data related to the input, including: " \
     "\ntype and quantity of crime, crime per month, crime per capita 1000 vs median assessed value of the region," \
     "\nand crime count vs the number of existing businesses of the region.")
 
@@ -39,7 +38,8 @@ def main():
 
     while True:
         map = input("If you would like a map to see what sectors, wards, and communities you may see the map png files " \
-        "\nfound in the /data folder or if you wish to see the images from here, enter 'Y' (Note: this process is slow): ")
+        "\nfound in the /data folder or if you wish to see the images from here, enter 'Y' (Note: this process is slow)" \
+        "\nor hit 'ENTER' to skip: ")
         if (map == 'Y'):
             show_maps()
 
@@ -52,20 +52,20 @@ def main():
         
         location_year_summary(df, location, year, location_type)
 
-        print("\nTo see the crime type and their count for the chosen year and location refer the plot shown:\n")
+        print("\nHere is a plot showing the crime category and their total count for the chosen year and location:\n")
         plot_crime_category(df, location, year, location_type)
 
         print("Here is a plot comparing the amount of crime per month for the chosen year and location:\n")
         plot_crime_count(df, location, year, location_type)
 
-        print("Here it a plot comparing Crime per capita 1000 vs a locations communities, median assessed value:\n")
+        print("Here is a plot comparing Crime per capita 1000 vs a locations communities, median assessed value:\n")
         plot_cc_vs_mdv(df, location, year, location_type)
 
-        print("Here it a plot comparing Crime Count vs a locations communities business count to date total:\n")
+        print("Here is a plot comparing Crime Count vs a locations communities business count to date total:\n")
         plot_cc_vs_bc(df, location, year, location_type)
 
         final = input("Would you like to visualize data for another location and/or time? If not, enter 'Q' to quit: ")
-        if(final == 'Q'):
+        if(final == 'Q' or final == 'q'):
             # print("Final data frame will now be saved in the /data folder.")
             # base_dir = os.path.dirname(os.path.dirname(__file__))
             # data_dir = os.path.join(base_dir, "data")
