@@ -34,7 +34,7 @@ def plot_crime_category(final_df, location, year, location_type):
     crime_by_category = crime_by_category.sort_values(by='Crime Count', ascending=False)
 
     axes[0].bar(crime_by_category['Category'], crime_by_category['Crime Count'])
-    axes[0].set_title(f'Total Crime by Category in {location} ({year})')
+    axes[0].set_title(f'Total Crime by Category in {location_type} {location} ({year})')
     axes[0].set_xlabel('Crime Category')
     axes[0].set_ylabel('Total Crime Count')
     axes[0].tick_params(axis='x', rotation=45)
@@ -74,7 +74,7 @@ def plot_crime_count(final_df, location, year, location_type):
 
     # Plot on first subplot
     axes[0].bar(monthly_crime['Month'], monthly_crime['Crime Count'])
-    axes[0].set_title(f'Total Crime Count per Month in {location} ({year})')
+    axes[0].set_title(f'Total Crime Count per Month in {location_type} {location} ({year})')
     axes[0].set_xlabel('Month')
     axes[0].set_ylabel('Total Crime Count')
     axes[0].set_xticks(range(1, 13))

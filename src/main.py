@@ -12,10 +12,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-from data_loader import create_dataframe
-from user_inputs import get_location, get_year
-from data_print_and_save import print_describe, location_year_summary
-from data_visualizer import show_maps, plot_crime_category, plot_crime_count, plot_cc_vs_mdv, plot_cc_vs_bc
+from dataLoader import create_dataframe
+from userInputs import get_location, get_year
+from dataPrintAndSave import print_describe, location_year_summary
+from dataVisualizer import show_maps, plot_crime_category, plot_crime_count, plot_cc_vs_mdv, plot_cc_vs_bc
 
 def main():     
 
