@@ -1,5 +1,10 @@
 # Report
 
+ENSF 692 Spring 2025 - Final Project
+Calgary Community Crime Statistics Dataset Analysis
+
+Authors: Jason Chiu and Jason Tieh
+
 ## Dataset Description
 
 The program primarily uses the Calgary **Community Crime Statistics** Dataset [1], which provides detailed monthly crime statistics from 2018 to 2024. The dataset includes information such as crime count, crime category, year, month, and location by community. The final dataset when merged includes columns such as business count, median assessed value, sector, wards, population household; with additional columns created that include Crime per Capita 1000 or Community Crime MTD Total
@@ -20,7 +25,7 @@ The user must enter a Sector, Ward, Community, and year that exists in the datas
 
 ### Output
 
-The program returns data visualizations and statistics tailored to the selected region and year, including:
+The program returns general statistics and data plots for the selected region and year, including:
 
 - A text summary of basic descriptive statistics for the chosen region and year.
 - A plot showing **crime count by category**. (A general plot across all years in Calgary is shown for comparison)
