@@ -1,6 +1,8 @@
 """
 main.py
 
+Authors: Jason Chiu and Jason Tieh
+
 Entry point of the ENSF 692 Spring 2025 final project.
 
 This script coordinates the overall program execution, including loading data,
