@@ -1,7 +1,18 @@
 import numpy as np
 import pandas as pd
 
+    
 def print_describe(df):
+    """    
+    Prints overall statistics of the final dataset, specifically for Crime Count, Crime per Capita 1000, Businesses Opened,
+    and Median Assessed Value.
+    
+    Parameters: 
+        df (pd.DataFrame): The DataFrame containing the final crime data.
+
+    Returns:
+        None: This method prints the statistics directly to the console.
+    """
     describe_df = df.replace([np.inf, -np.inf], np.nan)
     
     # print("describe_df columns:", describe_df.columns)
@@ -21,10 +32,10 @@ def print_describe(df):
     })
     
     describe_stats = describe_df[['Crime Count',
-                                 'Crime per Capita 1000',
-                                 'Businesses Opened',
+                                'Crime per Capita 1000',
+                                'Businesses Opened',
                                 #  'Community Businesses Opened TD Total',
-                                 ]].describe()
+                                ]].describe()
     
     assessment_stats = df.replace([np.inf, -np.inf], np.nan)
     assessment_stats = assessment_stats.groupby(['Community'], as_index=False).agg({'Median Assessed Value': 'first'})
@@ -50,6 +61,16 @@ def print_describe(df):
 
 
 def location_year_summary(df, location, year, location_type):
+    """
+    Generates a summary of crime statistics for the user specified location and year, including total population,
+    median assessed value, number of businesses, total crime incidents, crime per 1000 residents, and business density per 1000 residents.
+    
+    Parameters:
+        df (pd.DataFrame): The DataFrame containing the final dataset
+        location (str): The name of the location to analyze (e.g., community name, ward number, or sector).
+        year (int): The year of the data to analyze. (2018-2024)
+        location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
+    """
     # Filter by year and location
     filtered_df = df[(df['Year'] == year) & (df[location_type] == location)]
 

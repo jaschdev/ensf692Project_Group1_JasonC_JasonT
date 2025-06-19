@@ -15,9 +15,10 @@ import matplotlib.pyplot as plt
 import os
 
 from dataLoader import create_dataframe
-from userInputs import get_location, get_year
 from dataPrintAndSave import print_describe, location_year_summary
 from dataVisualizer import show_maps, plot_crime_category, plot_crime_count, plot_cc_vs_mdv, plot_cc_vs_bc
+from userInputs import get_location, get_community, get_year, get_ward, get_sector
+
 
 def main():     
 
@@ -25,7 +26,7 @@ def main():
     df = create_dataframe()       
     # print(df.head())
 
-    print(" --------- Start Crime Statistics Visualizer ---------")
+    print(" --------- Start Calgary Crime Statistics Visualizer ---------")
     print("\nWelcome to Calgary Crime Statistic Visualizer!\n" \
     "\nIn this program, you will be able to view Calgary's basic crime statistics from the years 2018 to 2024" \
     "\nSelect a year and location/region within Calgary, and you will see data related to the input, including: " \
@@ -42,7 +43,7 @@ def main():
         map = input("If you would like a map to see what sectors, wards, and communities you may see the map png files " \
         "\nfound in the /data folder or if you wish to see the images from here, enter 'Y' (Note: this process is slow)" \
         "\nor hit 'ENTER' to skip: ")
-        if (map == 'Y'):
+        if (map == 'Y' or map == 'y'):
             show_maps()
 
         location_type, location = get_location(df)
@@ -66,7 +67,8 @@ def main():
         print("Here is a plot comparing Crime Count vs a locations communities business count to date total:\n")
         plot_cc_vs_bc(df, location, year, location_type)
 
-        final = input("Would you like to visualize data for another location and/or time? If not, enter 'Q' to quit: ")
+        final = input("Would you like to visualize data for another location and/or time? Hit 'ENTER' to continue" \
+        "If not, enter 'Q' to quit: ")
         if(final == 'Q' or final == 'q'):
             # print("Final data frame will now be saved in the /data folder.")
             # base_dir = os.path.dirname(os.path.dirname(__file__))

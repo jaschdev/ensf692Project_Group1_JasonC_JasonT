@@ -4,23 +4,6 @@ import pandas as pd
 import os
 import pandas as pd
 
-# def load_data():
-#     # Get the path to the directory one level above src/
-#     base_dir = os.path.dirname(os.path.dirname(__file__))  # goes from src/ → project/
-#     data_dir = os.path.join(base_dir, "data")              # points to project/data/
-#     cache_file = os.path.join(data_dir, "final_merged_cleaned_data.pkl")
-
-#     if os.path.exists(cache_file):
-#         df = pd.read_pickle(cache_file)
-#     else:
-#         # Calling to process raw csv files to create main dataframe
-#         df = create_dataframe()
-#         # Save processed data to the cache
-#         df.to_pickle(cache_file)
-#     return df
-
-
-
 def create_dataframe():
     """
     Summary: This functions imports multiple data files, cleans them, and merges them into a single DataFrame.
@@ -92,7 +75,7 @@ def create_dataframe():
     census = census.stack('Year').reset_index()
     census.columns = ['COMM_CODE', 'Year', 'TOTAL_POP_HOUSEHOLD']
     census['Year'] = census['Year'].astype(int)
-     
+    
     ### Cleaning Business data ----------
     business = business_init.drop(['GETBUSID', 'TRADENAME', 'HOMEOCCIND', 'ADDRESS', 'LICENCETYPES', 'EXP_DT', 'JOBSTATUSDESC', 'POINT', 'GLOBALID'], axis=1)
     business['BUSINESS_COUNT'] = 1
@@ -108,7 +91,7 @@ def create_dataframe():
 
     ## Cleaning Assessment data ----------
     assessment = assessment_init
-   
+
     # Instead of taking data by year, take the average of the two years. When using data, will include a disclaimer
     assessment = assessment.groupby('COMM_CODE', as_index=False)[[
         'Number of taxable accounts',
@@ -117,7 +100,7 @@ def create_dataframe():
 
     ## Cleaning Wards data ----------
     wards = wards_init.drop(['CLASS', 'CLASS_CODE', 'SRG', 'COMM_STRUCTURE'], axis=1)
- 
+
     ## Cleaning Crime data ----------
     crime = crime_init
     # Sort to ensure months are in order
@@ -139,8 +122,8 @@ def create_dataframe():
 
     ## Merge 2 - merge1 and merge1.5 --------------------
     merge2_df = pd.merge(merge1_df, merge1_5_df, how="outer",
-                         left_on = ['COMM_CODE', 'WARD_NUM', 'SECTOR', 'Community', 'Year', 'Month'],
-                         right_on = ['COMM_CODE', 'WARD_NUM', 'SECTOR', 'Community', 'Year', 'Month'])
+                        left_on = ['COMM_CODE', 'WARD_NUM', 'SECTOR', 'Community', 'Year', 'Month'],
+                        right_on = ['COMM_CODE', 'WARD_NUM', 'SECTOR', 'Community', 'Year', 'Month'])
 
     ## Merge 3 plus assessment --------------------
     merge3_df = pd.merge(merge2_df, assessment, how='outer', left_on='COMM_CODE', right_on='COMM_CODE')
@@ -171,10 +154,10 @@ def create_dataframe():
 
     # Reorder columns for better organization
     final_df = final_df[['Community Code', 'Community', 'Year', 'Month', 'Sector', 'Ward Number',
-           'Category', 'Crime Count', 'Community Crime MTD Total',
-           'Businesses Opened', 'Community Businesses Opened TD Total',
-           'Taxable Accounts', 'Median Assessed Value',
-           'Population Household', 'Crime per Capita 1000']]
+        'Category', 'Crime Count', 'Community Crime MTD Total',
+        'Businesses Opened', 'Community Businesses Opened TD Total',
+        'Taxable Accounts', 'Median Assessed Value',
+        'Population Household', 'Crime per Capita 1000']]
 
     # final sort of year and month columns
     final_df = final_df.sort_values(['Year', 'Month'], ascending=[True, True])
