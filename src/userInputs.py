@@ -57,7 +57,7 @@ def get_year(df):
     """
     while True:
         # formating input to be case insensitive and ignore spaces at beginnig and end
-        year = input("Please enter the year of data to analyze: ")
+        year = input("Please enter the year of data to analyze (2018-2024): ")
         # ensure dataframe of breed column only has upper case names
         try:
             if (year not in df['Year'].values):
