@@ -143,13 +143,39 @@ def plot_crime_category(final_df, location, year, location_type):
     axes[1].grid(True)
     axes[1].legend(title='Crime Category', bbox_to_anchor=(1, 1), loc='upper left')
 
+    # --- PRINT PIVOT TABLE OF CATEGORY BY MONTH ---
+
+    # Pivot table: Months as index, numbered category columns as values
+    pivot = subset.pivot_table(index='Month', columns='Category', values='Crime Count', aggfunc='sum', fill_value=0)
+
+    # Sort months numerically if needed
+    pivot = pivot.sort_index()
+
+    # ---- Sort columns based on total (sum across all months) ----
+    category_totals = pivot.sum()
+    sorted_columns = category_totals.sort_values(ascending=False).index
+    pivot = pivot[sorted_columns]  # reorder columns by descending total
+
+    # Map categories to numeric column headers
+    category_map = {category: str(i+1) for i, category in enumerate(pivot.columns)}
+    renamed_pivot = pivot.rename(columns=category_map)
+
+    # Add a row for totals at the bottom
+    total_row = renamed_pivot.sum().to_frame().T
+    total_row.index = ['Total']
+    renamed_pivot = pd.concat([renamed_pivot, total_row])
+
+    print(f"\nMonthly Crime Count Table for {location_type} {location} ({year}):")
+    print(renamed_pivot)
+
+    print("\nCategory Legend:")
+    for category, number in category_map.items():
+        print(f" {number}: {category}")
+    print()
+
     # Layout fix
     plt.tight_layout()
-    plt.show()
-
-    # crime_category_month = final_df.groupby(['Category', 'Year', 'Month'])['Crime Count'].sum().reset_index()
-    # pivot_table_month = total_crime_category.pivot(index='Month', columns='Category', values='Crime Count')
-    # print(pivot_table_month)
+    plt.show(block=False)
 
 def plot_crime_count(final_df, location, year, location_type):
     """
@@ -206,7 +232,7 @@ def plot_crime_count(final_df, location, year, location_type):
 
     # Plot
     plt.tight_layout()
-    plt.show()
+    plt.show(block=False)
 
 def plot_cc_vs_mdv(final_df, location, year, location_type):
     """
@@ -265,7 +291,7 @@ def plot_cc_vs_mdv(final_df, location, year, location_type):
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    plt.show(block=False)
 
 def plot_cc_vs_bc(final_df, location, year, location_type):
     """
@@ -326,4 +352,4 @@ def plot_cc_vs_bc(final_df, location, year, location_type):
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    plt.show(block=False)
