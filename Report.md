@@ -64,7 +64,9 @@ A Pivot table was also created to easily plot the total crime count per month fo
 ```
 ### User Interface and Execution
 The program meets this requirement because the user enters two required input values. The region and the year. Invalid inputs are handled and prompted for re-entry. Screenshots are provided for the expected execution, including handling of incorrect input:
-![Execution of Program](screenshots/main_output.png)
+![Execution of Program 1](screenshots/main_output1.png)
+
+![Execution of Program 2](screenshots/main_output2.png)
 
 Plots are generated that depicts an aspect of the data. Screenshots of plots can be found in /screenshots. There are a total of four Plots, two examples are shown below:
 
