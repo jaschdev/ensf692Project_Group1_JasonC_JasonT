@@ -8,15 +8,14 @@ def create_dataframe():
     """
     Summary: This functions imports multiple data files, cleans them, and merges them into a single DataFrame.
 
-    Returns: final_df: A cleaned and merged DataFrame with the following columns:
-            - Community Code, Community, Year, Month, Sector, Ward Number
-            - Category, Crime Count, Community Crime MTD Total
-            - Businesses Opened, Community Businesses Opened TD Total
-            - Taxable Accounts, Median Assessed Value, Population Household
-            - Crime per Capita 1000
+    Returns: 
+        final_df: A cleaned and merged DataFrame with the following columns:
+         - Community Code, Community, Year, Month, Sector, Ward Number
+         - Category, Crime Count, Community Crime MTD Total
+         - Businesses Opened, Community Businesses Opened TD Total
+         - Taxable Accounts, Median Assessed Value, Population Household
+         - Crime per Capita 1000
     """
-
-
     # ----------- Importing Data Files ------------
         
     census2016_init = pd.read_csv('data/Census_by_Community_2016_20250617.csv')
@@ -173,9 +172,9 @@ def export_to_excel(df, filename='output.xlsx', sheet_name='Sheet1'):
     Exports a DataFrame to an Excel file.
 
     Parameters:
-    - df: pandas DataFrame 
-    - filename: name of the Excel file to create
-    - sheet_name: name of the worksheet
+        df (pd.dataframe): pandas DataFrame 
+        filename (str): name of the Excel file to create
+        sheet_name (str): name of the worksheet
     """
     # Create a multi index dataframe with Community Code, Community, Year, Month
 

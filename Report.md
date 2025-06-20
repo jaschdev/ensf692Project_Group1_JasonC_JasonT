@@ -20,20 +20,29 @@ Users interact with the program through a command-line interface (CLI) where the
 
 1. Choose whether to view reference maps (sector, ward, community) [9][10].
 2. Select the type of region: Sector, Ward, or Community.
-3. Specify the exact name of the Sector, Ward, or Community.
-4. Specify the year.
+3. Choose whether to view a reference table with available locations to choose from in the chosen region
+4. Specify the exact name of the Sector, Ward, or Community.
+5. Specify the year.
 
 The user must enter a Sector, Ward, Community, and year that exists in the dataset. If there is an invalid input, the user is prompted for re-entry without terminating the program. The program is also designed to handle case-sensitive inputs or extra spaces. 
+
+After printing out a general stats table for the chosen region and year, plots are generated and further prompting appears:
+
+6. Choose whether or not to save the generated plot as a png into the /images folder repeating for all 4 plots
+7. Choose whether to re-run the visualizer with different chosen location and year repeating steps 1-6
+8. Choose whether to export dataframe as an excel file for separate viewing thereafter terminating the program
 
 ### Output
 
 The program returns general statistics and data plots for the selected region and year, including:
 
-- A text summary of basic descriptive statistics for the chosen region and year.
-- A plot showing **crime count by category**. (A general plot across all years in Calgary is shown for comparison)
-- A bar chart of **monthly crime counts**. (A general plot across all years in Calgary is shown for comparison)
-- A scatter plot comparing **crime per capita vs median assessed value**.
-- A scatter plot comparing **total crime count vs number of businesses**.
+- A text summary of basic descriptive statistics for the chosen region and year and how they compare to other locations
+of the same location type 
+- A bar chart of **crime count by category**. (A general line plot across all years in Calgary is shown for comparison)
+along with a corresponding pivot table of the same data but by month printed into the console
+- A bar chart of **monthly crime counts**. (A general line plot across all years in Calgary is shown for comparison)
+- A scatter plot comparing **crime per capita vs median assessed value** with the location highlighted for better viewing.
+- A scatter plot comparing **total crime count vs number of businesses** with the location highlighted for better viewing.
 
 The user is also prompted whether to analyze another region or quit. Upon quitting, the program thanks the user.
 
@@ -63,7 +72,8 @@ A Pivot table was also created to easily plot the total crime count per month fo
     pivot_table = crime_month.pivot(index='Month', columns='Year', values='Crime Count')
 ```
 ### User Interface and Execution
-The program meets this requirement because the user enters two required input values. The region and the year. Invalid inputs are handled and prompted for re-entry. Screenshots are provided for the expected execution, including handling of incorrect input:
+The program meets this requirement because the user enters atleast two required input values. The region type, the location, and the year. Invalid inputs are handled and prompted for re-entry. Screenshots are provided for the expected execution, including handling of incorrect input:
+
 ![Execution of Program](screenshots/main_output.png)
 
 Plots are generated that depicts an aspect of the data. Screenshots of plots can be found in /screenshots. There are a total of four Plots, two examples are shown below:

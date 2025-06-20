@@ -16,8 +16,11 @@ def show_regions_available(final_df, location_type):
     Parameters:
         final_df (pd.dataframe): DataFrame with merged dataset.
         location_type (str): 'Community', 'Ward Number', or 'Sector'
+
+    Returns:
+        Opens a tk window to display a list or table of the available regions that can be entered in.
     """
-    # Prepare filtered unique values
+    # filter based on the conditions of no nan values and removing duplicates, dependent on location type
     if location_type == 'Community':
         region_df = final_df[['Community Code', 'Community']].dropna()
         region_df = region_df.drop_duplicates().sort_values('Community')
@@ -55,7 +58,7 @@ def show_regions_available(final_df, location_type):
     frame = tk.Frame(window)
     frame.pack(fill='both', expand=True)
 
-    # Grid configuration for clean layout
+    # Grid configuration layout
     frame.grid_rowconfigure(0, weight=1)
     frame.grid_columnconfigure(0, weight=1)
 
@@ -78,18 +81,23 @@ def show_regions_available(final_df, location_type):
     tree.grid(row=0, column=0, sticky='nsew')
     scrollbar.grid(row=0, column=1, sticky='ns')
 
-    # Keeps window responsive and non-blocking
+    # Keeps window open and program to continue
     window.after(100, lambda: None)
 
 
 def show_maps():
-    """Display two PNG images side by side using matplotlib."""
+    """Display two PNG images side by side using matplotlib.
+    
+    Returns:
+        Opens a plt window showing the two pngs side by side
+    """
     print("\nLoading images. This may take a few seconds...\n")
     file1 = "data/Calgary_Wards_and_Community_Codes_Map_2025.png"
     file2 = "data/Creb_Calgary_Community_and_Sector_Map_2025.png"
     img1 = mpimg.imread(file1)
     img2 = mpimg.imread(file2)
 
+    # uses plt plot to show the two reference map images
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))  # 1 row, 2 columns
 
     axes[0].imshow(img1)
@@ -102,11 +110,13 @@ def show_maps():
 
     plt.tight_layout()
     plt.show(block = False)
+    
 
 def plot_crime_category(final_df, location, year, location_type):
     """
     Creates two subplots: total crime count per category for the specified location and year, 
-    and a line plot of total crime count for all categories per year in Calgary.
+    and a line plot of total crime count for all categories per year in Calgary. Also prints 
+    out a pivot table in the console showing crime category counts by month
 
     Parameters:
         final_df (DataFrame): The DataFrame containing the cleaned and merged data.
@@ -115,7 +125,7 @@ def plot_crime_category(final_df, location, year, location_type):
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
         
     Returns:
-        Display of the plots.
+        Opens a plt window displaying the plots and prints a pivot table to the console
     """
     # Create 2 subplots for Figure 1
     fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10, 9))
@@ -151,12 +161,12 @@ def plot_crime_category(final_df, location, year, location_type):
     # Sort months numerically if needed
     pivot = pivot.sort_index()
 
-    # ---- Sort columns based on total (sum across all months) ----
+    # Sort columns based on total (sum across all months) to match bar graph
     category_totals = pivot.sum()
     sorted_columns = category_totals.sort_values(ascending=False).index
     pivot = pivot[sorted_columns]  # reorder columns by descending total
 
-    # Map categories to numeric column headers
+    # Map categories to numeric column headers in order to fit entire data in console
     category_map = {category: str(i+1) for i, category in enumerate(pivot.columns)}
     renamed_pivot = pivot.rename(columns=category_map)
 
@@ -168,6 +178,7 @@ def plot_crime_category(final_df, location, year, location_type):
     print(f"\nMonthly Crime Count Table for {location_type} {location} ({year}):")
     print(renamed_pivot)
 
+    # Prints numeric column headers legend
     print("\nCategory Legend:")
     for category, number in category_map.items():
         print(f" {number}: {category}")
@@ -176,6 +187,7 @@ def plot_crime_category(final_df, location, year, location_type):
     # Layout fix
     plt.tight_layout()
     plt.show(block=False)
+
 
 def plot_crime_count(final_df, location, year, location_type):
     """
@@ -189,7 +201,7 @@ def plot_crime_count(final_df, location, year, location_type):
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
         
     Returns:
-        Display of the plots.
+        Opens a plt window displaying the plots.
     """
     # ----- PLOT 2.1: TOTAL CRIME COUNT PER MONTH -----
 
@@ -234,6 +246,7 @@ def plot_crime_count(final_df, location, year, location_type):
     plt.tight_layout()
     plt.show(block=False)
 
+
 def plot_cc_vs_mdv(final_df, location, year, location_type):
     """
     Creates a scatter plot of median assessed values versus crime per capita for the specified location and year.
@@ -245,7 +258,7 @@ def plot_cc_vs_mdv(final_df, location, year, location_type):
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
         
     Returns:
-        Display of the scatter plot.
+        Opens a plt window displaying the scatter plot.
     """
 
     # ----- PLOT 3: MEDIAN ASSESSED VALUES VERSUS CRIME PER CAPITA -----
@@ -271,20 +284,21 @@ def plot_cc_vs_mdv(final_df, location, year, location_type):
                 scatter_df['Crime per Capita 1000'],
                 alpha=0.5, label='Other Communities')
 
-    # Highlight the specified community
+    # Highlight the specified community or communities if multiple apply
     highlight = scatter_df[scatter_df[location_type] == location]
     if not highlight.empty:
         plt.scatter(highlight['Median Assessed Value'], 
                     highlight['Crime per Capita 1000'],
                     color='red', s=100, label=f"{location_type}: {location}",
                     edgecolor='black')
+        # Add labels (community codes)
         for _, row in highlight.iterrows():
             plt.text(row['Median Assessed Value'],
                     row['Crime per Capita 1000'] + 0.2,
                     row['Community Code'],
                     fontsize=10, ha='center', color='red')
 
-    # --- Plot labels ---
+    # Plot labels
     plt.title(f'Median Assessed Value vs. Crime per Capita by Community ({year})')
     plt.xlabel('Community Median Assessed Value ($)')
     plt.ylabel('Crime per Capita 1000')
@@ -292,6 +306,7 @@ def plot_cc_vs_mdv(final_df, location, year, location_type):
     plt.legend()
     plt.tight_layout()
     plt.show(block=False)
+
 
 def plot_cc_vs_bc(final_df, location, year, location_type):
     """
@@ -304,7 +319,7 @@ def plot_cc_vs_bc(final_df, location, year, location_type):
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
         
     Returns:
-        Display of the scatter plot.
+        Opens a plt window displaying the scatter plot.
     """
     # ----- PLOT 4: TOTAL CRIME COUNT VERSUS TOTAL BUSINESS COUNT ----- 
 
@@ -331,13 +346,12 @@ def plot_cc_vs_bc(final_df, location, year, location_type):
     plt.scatter(scatter_df['Community Businesses Opened TD Total'],
                 scatter_df['Crime Count'],
                 alpha=0.5, label='Other Communities')
-    # Highlight the selected community
+    # Highlight the specified community or communities if multiple apply
     highlight = scatter_df[scatter_df[location_type] == location]
     if not highlight.empty:
         plt.scatter(highlight['Community Businesses Opened TD Total'],
                     highlight['Crime Count'],
                     color='red', s=100, edgecolor='black', label=f"{location_type}: {location}")
-
         # Add labels (community codes)
         for _, row in highlight.iterrows():
             plt.text(row['Community Businesses Opened TD Total'],
@@ -345,7 +359,7 @@ def plot_cc_vs_bc(final_df, location, year, location_type):
                     row['Community Code'],
                     fontsize=9, ha='center', color='red')
 
-    # Add plot details
+    # Plot labels
     plt.title(f'Total Crime Count vs. Business Count by Communities ({year})')
     plt.xlabel(f'Community Businesses Opened TD Total')
     plt.ylabel('Total Crime Count')
