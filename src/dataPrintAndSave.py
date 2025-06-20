@@ -1,5 +1,31 @@
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+import os
+
+def save_plot(location_type, year, plot_name, location):
+    """
+    Saves the current matplotlib plot to the 'images' directory.
+
+    Parameters:
+        location_type (str): 'Community', 'Ward', or 'Sector'
+        year (int): Year as int
+        plot_name (str): A short name describing the plot (e.g., 'crimecategoryplot')
+        location (str): Location name or number
+    """
+    # Build filename
+    location = str(location).replace(" ", "_")
+    ltype = location_type.replace(" ", "")
+    filename = f"{ltype}_{year}_{location}_{plot_name}.png"
+
+    # Build path
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # One level above /src
+    images_dir = os.path.join(base_dir, "images")
+    os.makedirs(images_dir, exist_ok=True)
+
+    filepath = os.path.join(images_dir, filename)
+    plt.savefig(filepath, bbox_inches='tight', dpi=300)
+    print(f"Plot saved as: {filepath}")
 
 def print_describe(df):
     """
@@ -69,40 +95,87 @@ def location_year_summary(df, location, year, location_type):
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
     """
 
-    # Filter by year and location
-    filtered_df = df[(df['Year'] == year) & (df[location_type] == location)]
+    # Filter by year
+    year_df = df[df['Year'] == year]
 
-    if filtered_df.empty:
+    # Special handling for blank/NaN wards
+    if location_type == 'Ward Number':
+        year_df = year_df[year_df['Ward Number'].notna() & (year_df['Ward Number'].astype(str).str.strip() != '')]
+
+
+    if year_df.empty or location not in year_df[location_type].unique():
         print(f"No data found for {location_type}: {location} in {year}.")
         return
 
-    # Total population
-    pop_vals = filtered_df['Population Household'].dropna().unique()
-    total_population = int(np.mean(pop_vals)) if len(pop_vals) > 0 else 'N/A'
+    # Aggregate stats
+    if (location_type == 'Community'):
+        grouped = year_df.groupby(location_type).agg({
+            'Population Household': 'first',
+            'Median Assessed Value': 'first',
+            'Community Businesses Opened TD Total': 'max',
+            'Crime Count': 'sum'
+        }).reset_index()
+    else:
+        grouped = year_df.groupby('Community').agg({
+            location_type: 'first',
+            'Population Household': 'first',
+            'Median Assessed Value': 'first',
+            'Community Businesses Opened TD Total': 'max',
+            'Crime Count': 'sum'
+        }).reset_index()
+        grouped = grouped.groupby(location_type).agg({
+            'Population Household': 'sum',
+            'Median Assessed Value': 'mean',
+            'Community Businesses Opened TD Total': 'sum',
+            'Crime Count': 'sum'
+        }).reset_index()
 
-    # Median Assessed Value
-    med_vals = filtered_df['Median Assessed Value'].dropna().unique()
-    median_assessed = int(np.mean(med_vals)) if len(med_vals) > 0 else 'N/A'
+    # Calculate per capita for the year
+    grouped['Crime per 1000'] = grouped['Crime Count'] / grouped['Population Household'] * 1000
+    grouped['Business Density'] = grouped['Community Businesses Opened TD Total'] / grouped['Population Household'] * 1000
 
-    # Number of Businesses
-    bis_vals = filtered_df['Community Businesses Opened TD Total'].dropna().unique()
-    num_businesses = int(np.mean(bis_vals)) if len(bis_vals) > 0 else 'N/A'
+    # Rank each column, skipping NaNs
+    stat_cols = [
+        'Population Household',
+        'Median Assessed Value',
+        'Community Businesses Opened TD Total',
+        'Crime Count',
+        'Crime per 1000',
+        'Business Density'
+    ]
 
-    # Crime Count Total
-    total_crimes = int(filtered_df['Crime Count'].sum())
+    for col in stat_cols:
+        ascending = False
+        valid = grouped[col].notna()
+        grouped[f'{col} Rank'] = np.nan
+        grouped.loc[valid, f'{col} Rank'] = grouped.loc[valid, col].rank(ascending=ascending, method='min')
 
-    # Crime per 1000 people
-    crime_per_1000 = round((total_crimes / total_population) * 1000, 2) if isinstance(total_population, int) and total_population > 0 else 'N/A'
+    row = grouped[grouped[location_type] == location].iloc[0]
 
-    # Business Density
-    bis_density = round((num_businesses / total_population) * 1000, 2) if isinstance(num_businesses, int) and isinstance(total_population, int) and total_population > 0 else 'N/A'
+    def format_line(label, val, avg, rank, total):
+        avg_fmt = f"{avg:,.0f}" if not pd.isna(avg) else "N/A"
+        if pd.isna(val):
+            return f"{label:<30}: N/A (Avg: {avg_fmt}) | Rank: N/A/{total}"
+        return f"{label:<30}: {val:,} (Avg: {avg_fmt}) | Rank: {int(rank)}/{total}"
 
-    # Output Summary
-    print(f"Summary for {location_type}: {location} ({year})")
-    print("-----------------------------------------------")
-    print(f"Total Population: {total_population:,}" if isinstance(total_population, int) else "Total Population: N/A")
-    print(f"Median Assessed Value: ${median_assessed:,}" if isinstance(median_assessed, int) else "Median Assessed Value: N/A")
-    print(f"Number of Businesses: {num_businesses}" if isinstance(num_businesses, int) else "Number of Businesses: N/A")
-    print(f"Total Crime Incidents: {total_crimes}")
-    print(f"Crime per 1,000 residents: {crime_per_1000}")
-    print(f"Business Density per 1,000 residents: {bis_density}")
+    print(f"\nSummary for {location_type}: {location} ({year})")
+    print("-" * 60)
+
+    for col, label in zip(stat_cols, [
+        "Total Population",
+        "Median Assessed Value",
+        "Number of Businesses",
+        "Total Crime Incidents",
+        "Crime per 1,000 residents",
+        "Business Density (/1000)"
+    ]):
+        value = row[col]
+        average = grouped[col].mean()
+        rank = row[f'{col} Rank']
+        total = grouped[col].notna().sum()
+        print(format_line(label, round(value, 2) if pd.notna(value) else value, average, rank, total))
+
+    print("-" * 60)
+    print("*Note: The larger the value, the higher the rank" \
+    "\n**Notes: If the location type is a sector or ward, the Median Assessed Value"
+    "\n         is an average of the communities within these regions")
