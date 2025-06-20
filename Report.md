@@ -7,7 +7,9 @@ Authors: Jason Chiu and Jason Tieh
 
 ## Dataset Description
 
-The program primarily uses the Calgary **Community Crime Statistics** Dataset [1], which provides detailed monthly crime statistics from 2018 to 2024. The dataset includes information such as crime count, crime category, year, month, and location by community. The final dataset when merged includes columns such as business count, median assessed value, sector, wards, population household; with additional columns created that include Crime per Capita 1000 or Community Crime MTD Total
+The program primarily uses the Calgary **Community Crime Statistics** Dataset [1], which provides detailed monthly crime statistics from 2018 to 2024. The dataset includes information such as crime count, crime category, year, month, and location by community. The final dataset when merged includes columns such as business count, median assessed value, sector, wards, population household; with additional columns created that include Crime per Capita 1000 or Community Crime MTD Total. The final multi-indexed dataframe is exported as an excel file and be be found under /data/calgary_crime_data.xlsx. A screenshot of the final dataframe is shown below:
+
+![Final Dataframe](/screenshots/excel_output.png)
 
 
 ## User Interface Input and Output Summary
@@ -48,10 +50,7 @@ More than 3 seperate datasets are merged into a large dataset. All data is pulle
 ### Code Implementation
 The program meets this requirement because:
 1. A print_describe() function uses the describe() method to give statistics (count, mean, min, max, std. deviation, etc.) about the crime count, Crime per Capita 1000, Businesses Opened, and Median Assess Value
-2. We added two or more columns to the main dataframe. We calculated the Crime per Capita (per 1000 residents) and summed the Business count for the community. The final dataframe is exported as an excel file and be be found under /data/calgary_crime_data.xlsx. A screenshot of the final dataframe is shown below:
-
-![Final Dataframe](/screenshots/excel_output.png)
-
+2. We added two or more columns to the main dataframe. We calculated the Crime per Capita (per 1000 residents) and summed the Business count for the community. 
 3. A masking operation, groupby operation, pivot table, and aggregation computation was used for a subset of the data when creating plots. For example: A masking operation is used based on the location and year, a group by operation and aggregation computation was used to get the total crime count for each month.
 
 ```python
