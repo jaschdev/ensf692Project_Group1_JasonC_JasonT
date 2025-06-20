@@ -66,12 +66,14 @@ A Pivot table was also created to easily plot the total crime count per month fo
 The program meets this requirement because the user enters two required input values. The region and the year. Invalid inputs are handled and prompted for re-entry. Screenshots are provided for the expected execution, including handling of incorrect input:
 ![Execution of Program](screenshots/main_output.png)
 
-Plots are show that depicts an aspect of the data. Screenshots of plots can be found in /screenshots. There are a total of four Plots, one example shown below:
+Plots are generated that depicts an aspect of the data. Screenshots of plots can be found in /screenshots. There are a total of four Plots, two examples are shown below:
 
 ![Example of Plot 1](screenshots/plot1.png)
 
+![Example of Plot 2](screenshots/plot2.png)
+
 ### Commenting and Syntax
-The program includes comments throughout the code for clarity. Classes, methods, and functions are documented using docstrings.  variables and functions are lowercase and seperated by underscore (e.g. get_location(), get_year()), all classes have camelCase names (e.g. dataLoader, dataVisualizer, userInputs.).
+The program includes comments throughout the code for clarity. Classes, methods, and functions are documented using docstrings.  variables and functions are lowercase and seperated by underscore (e.g. get_location(), get_year()).
 
 
 ## Citation:  
