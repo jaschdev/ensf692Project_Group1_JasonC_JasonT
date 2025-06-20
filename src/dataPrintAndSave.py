@@ -24,7 +24,8 @@ def save_plot(location_type, year, plot_name, location):
     os.makedirs(images_dir, exist_ok=True)
 
     filepath = os.path.join(images_dir, filename)
-    plt.savefig(filepath, bbox_inches='tight', dpi=300)
+    fig = plt.gcf()
+    fig.savefig(filepath, bbox_inches='tight', dpi=300)
     print(f"Plot saved as: {filepath}")
 
 def print_describe(df):
