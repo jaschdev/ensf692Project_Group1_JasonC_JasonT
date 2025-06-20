@@ -5,7 +5,7 @@ import os
 
 def save_plot(location_type, year, plot_name, location):
     """
-    Saves the current matplotlib plot to the 'images' directory.
+    Saves the current matplotlib plot to the 'images' directory as a png.
 
     Parameters:
         location_type (str): 'Community', 'Ward', or 'Sector'
@@ -23,10 +23,12 @@ def save_plot(location_type, year, plot_name, location):
     images_dir = os.path.join(base_dir, "images")
     os.makedirs(images_dir, exist_ok=True)
 
+    # Saving plot to file path
     filepath = os.path.join(images_dir, filename)
     fig = plt.gcf()
     fig.savefig(filepath, bbox_inches='tight', dpi=300)
     print(f"Plot saved as: {filepath}")
+
 
 def print_describe(df):
     """
@@ -37,41 +39,45 @@ def print_describe(df):
         df (pd.DataFrame): The DataFrame containing the final crime data.
 
     Returns:
-        None: This method prints the statistics directly to the console.
+        Prints the describe method statistics directly to the console.
     """
+    # removal of any inf values with nan
     describe_df = df.replace([np.inf, -np.inf], np.nan)
     
-    # print("describe_df columns:", describe_df.columns)
-    
+    # grouping data by main indices and chooses sum or first as required
     describe_df = describe_df.groupby(['Year', 'Month', 'Community'], as_index=False).agg({
         'Crime Count': 'sum',
         'Crime per Capita 1000': 'first',  # these don't change within community/month
         'Businesses Opened': 'first',
     })
     
+    # grouping data to produce 1 row for each month
     describe_df = describe_df.groupby(['Year', 'Month'], as_index=False).agg({
         'Crime Count': 'sum',
         'Crime per Capita 1000': 'mean',
         'Businesses Opened': 'sum',
     })
     
+    # applying describe method
     describe_stats = describe_df[['Crime Count',
                                   'Crime per Capita 1000',
                                   'Businesses Opened',
                                   ]].describe()
     
+    # similar method for assessment column case but grouping is different
     assessment_stats = df.replace([np.inf, -np.inf], np.nan)
     assessment_stats = assessment_stats.groupby(['Community'], as_index=False).agg({'Median Assessed Value': 'first'})
     median_assess_describe = assessment_stats['Median Assessed Value'].describe()
     
     describe_stats_t = describe_stats.T
     
-    # Add median assessment as a new row
+    # concatonating median assessment as a new row
     describe_stats_t.loc['Median Assessed Value'] = median_assess_describe
     
     # Transpose back to original format (stats as rows)
     describe_stats_final = describe_stats_t.T
 
+    # convert median assessed values into numeric instead of scientific
     describe_stats_final['Median Assessed Value'] = describe_stats_final['Median Assessed Value'].apply(
         lambda x: f"{x:,.2f}" if pd.notna(x) else x
     )
@@ -85,7 +91,7 @@ def print_describe(df):
 
 def location_year_summary(df, location, year, location_type):
     """
-    Generates a summary of crime statistics for the user specified location andyear, including total population,
+    Generates a summary of crime statistics for the user specified location and year, including total population,
     median assessed value, number of businesses, total crime incidents, crime per 1000 residents, and business 
     density per 1000 residents.
 
@@ -94,8 +100,10 @@ def location_year_summary(df, location, year, location_type):
         location (str): The name of the location to analyze (e.g., community name, ward number, or sector).
         year (int): The year of the data to analyze. (2018-2024)
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
-    """
 
+    Returns:
+        Prints a short table of statistics directly to the console.
+    """
     # Filter by year
     year_df = df[df['Year'] == year]
 
@@ -103,12 +111,12 @@ def location_year_summary(df, location, year, location_type):
     if location_type == 'Ward Number':
         year_df = year_df[year_df['Ward Number'].notna() & (year_df['Ward Number'].astype(str).str.strip() != '')]
 
-
+    # Case for non matching location
     if year_df.empty or location not in year_df[location_type].unique():
         print(f"No data found for {location_type}: {location} in {year}.")
         return
 
-    # Aggregate stats
+    # Aggregate stats, groupby differently depending on location type to get proper desired stats
     if (location_type == 'Community'):
         grouped = year_df.groupby(location_type).agg({
             'Population Household': 'first',
@@ -145,6 +153,7 @@ def location_year_summary(df, location, year, location_type):
         'Business Density'
     ]
 
+    # creating ranking of chosen stats to all stats
     for col in stat_cols:
         ascending = False
         valid = grouped[col].notna()
@@ -153,12 +162,7 @@ def location_year_summary(df, location, year, location_type):
 
     row = grouped[grouped[location_type] == location].iloc[0]
 
-    def format_line(label, val, avg, rank, total):
-        avg_fmt = f"{avg:,.0f}" if not pd.isna(avg) else "N/A"
-        if pd.isna(val):
-            return f"{label:<30}: N/A (Avg: {avg_fmt}) | Rank: N/A/{total}"
-        return f"{label:<30}: {val:,} (Avg: {avg_fmt}) | Rank: {int(rank)}/{total}"
-
+    # Printing of the summary table
     print(f"\nSummary for {location_type}: {location} ({year})")
     print("-" * 60)
 
@@ -180,3 +184,26 @@ def location_year_summary(df, location, year, location_type):
     print("*Note: The larger the value, the higher the rank" \
     "\n**Notes: If the location type is a sector or ward, the Median Assessed Value"
     "\n         is an average of the communities within these regions")
+    
+
+def format_line(label, val, avg, rank, total):
+    """
+    Formats a summary line displaying a statistical value along with its average and rank.
+
+    Parameters:
+        label (str): The label or descriptor for the metric (e.g., "Total Population").
+        val (float): The actual value for the selected region. May be NaN.
+        avg (float): The average value across all regions (including NaNs for comparison).
+        rank (float): The rank of the selected region among regions with valid (non-NaN) values.
+        total (int): The total number of valid entries used to calculate the rank.
+
+    Return:
+        A formatted string like:
+        "Total Population             : 6,200 (Avg: 5,812) | Rank: 3/14"
+        or if value is missing:
+        "Total Population             : N/A (Avg: 5,812) | Rank: N/A/14"
+    """
+    avg_fmt = f"{avg:,.0f}" if not pd.isna(avg) else "N/A"
+    if pd.isna(val):
+        return f"{label:<30}: N/A (Avg: {avg_fmt}) | Rank: N/A/{total}"
+    return f"{label:<30}: {val:,} (Avg: {avg_fmt}) | Rank: {int(rank)}/{total}"
