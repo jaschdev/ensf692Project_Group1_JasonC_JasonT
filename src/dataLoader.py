@@ -168,21 +168,21 @@ def create_dataframe():
     return final_df
 
 
-# def export_to_excel(df, filename='output.xlsx', sheet_name='Sheet1'):
-#     """
-#     Exports a DataFrame to an Excel file.
+def export_to_excel(df, filename='output.xlsx', sheet_name='Sheet1'):
+    """
+    Exports a DataFrame to an Excel file.
 
-#     Parameters:
-#     - df: pandas DataFrame 
-#     - filename: name of the Excel file to create
-#     - sheet_name: name of the worksheet
-#     """
-#     # Create a multi index dataframe with Community Code, Community, Year, Month
+    Parameters:
+    - df: pandas DataFrame 
+    - filename: name of the Excel file to create
+    - sheet_name: name of the worksheet
+    """
+    # Create a multi index dataframe with Community Code, Community, Year, Month
 
-#     try:
-#         df = df.set_index(['Community Code', 'Community', 'Year', 'Month'])
-#         df.to_excel(filename, sheet_name=sheet_name, index=True)
-#         print(f"DataFrame exported to '{filename}' with index.")
-#     except Exception as e:
-#         print(f"Export failed: {e}")
+    try:
+        df = df.set_index(['Community Code', 'Community', 'Year', 'Month'])
+        df.to_excel(filename, sheet_name=sheet_name, index=True)
+        print(f"DataFrame exported to '{filename}' with index.")
+    except Exception as e:
+        print(f"Export failed: {e}")
 
