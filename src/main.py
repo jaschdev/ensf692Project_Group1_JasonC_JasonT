@@ -2,6 +2,8 @@
 main.py
 
 Authors: Jason Chiu and Jason Tieh
+Since: Jun 19, 2025
+version: 1.0
 
 Entry point of the ENSF 692 Spring 2025 final project.
 
@@ -14,8 +16,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-from dataLoader import create_dataframe
-from dataPrintAndSave import print_describe, location_year_summary
+from dataLoader import create_dataframe, export_to_excel
+from dataPrintAndSave import print_describe, location_year_summary, save_plot
 from dataVisualizer import show_maps, plot_crime_category, plot_crime_count, plot_cc_vs_mdv, plot_cc_vs_bc
 from userInputs import get_location, get_year
 
@@ -25,7 +27,6 @@ def main():
           \nCreating dataframe...\n")
     # Load data from CSV files and perform initial cleaning    
     df = create_dataframe()       
-    # print(df.head())
 
     print(" --------- Start Calgary Crime Statistics Visualizer ---------")
     print("\nWelcome to Calgary Crime Statistic Visualizer!\n" \
@@ -36,11 +37,14 @@ def main():
 
     print("\nBased On current entire existing dataset, the following values have also been observed:\n")
 
+    # Prints describe table summarizing entire dataset indexed by month
     print_describe(df)
 
     print("\n\nTo begin the visualizer, first select the region type.")
 
+    # Loop for if user wishes to visualize different regions and/or years
     while True:
+        # prompt to bring up Sector/Ward/Community reference maps
         map = input("\nIf you would like a map to see what sectors, wards, and communities you may see the map png files " \
         "\nfound in the /data folder or if you wish to see the images from here, enter (Y/N) (Note: this process is slow): ").strip().upper()
         if (map == 'Y'):
@@ -55,32 +59,48 @@ def main():
         
         location_year_summary(df, location, year, location_type)
 
-        print("\nHere is a plot showing the crime category and their total count for the chosen year and location:\n")
+        print("\nHere is a plot showing the crime category and their total count for the chosen year and location: \
+              \nBelow is a pivot table for the same data but separated by month")
         plot_crime_category(df, location, year, location_type)
-
-        print("Here is a plot comparing the amount of crime per month for the chosen year and location:\n")
+        save0 = input("Would you like to save this plot as a png? (stored in /images) (Y/N): ").strip().upper()
+        if (save0 == 'Y'):
+            save_plot(location_type, year, "Crime_Category_Count", location)
+        plt.close()
+        
+        print("\nHere is a plot comparing the amount of crime per month for the chosen year and location:\n")
         plot_crime_count(df, location, year, location_type)
+        save1 = input("Would you like to save this plot as a png? (stored in /images) (Y/N): ").strip().upper()
+        if (save1 == 'Y'):
+            save_plot(location_type, year, "Crime_Count_by_Month", location)
+        plt.close()
 
-        print("Here is a plot comparing Crime per capita 1000 vs a locations communities, median assessed value:\n")
+        print("\nHere is a plot comparing Crime per capita 1000 vs a locations communities, median assessed value: \
+              \nNote: If the point is not highlighted, there is no information on median assessed value for this location\n")
         plot_cc_vs_mdv(df, location, year, location_type)
+        save2 = input("Would you like to save this plot as a png? (stored in /images) (Y/N): ").strip().upper()
+        if (save2 == 'Y'):
+            save_plot(location_type, year, "Crime_per_Capita_vs__med_Assessed_Value", location)
+        plt.close()
 
-        print("Here is a plot comparing Crime Count vs a locations communities business count to date total:\n")
+        print("\nHere is a plot comparing Crime Count vs a locations communities business count to date total: \
+              \nNote: If the point is not highlighted, there is no information on business count to date for this location\n")
         plot_cc_vs_bc(df, location, year, location_type)
+        save3 = input("Would you like to save this plot as a png? (stored in /images) (Y/N): ").strip().upper()
+        if (save3 == 'Y'):
+            save_plot(location_type, year, "Crime_Count_vs_Business_Count", location)
+        plt.close()
 
-        final = input("Would you like to visualize data for another location and/or time? Hit 'ENTER' to continue" \
+        final = input("\nWould you like to visualize data for another location and/or time? Hit 'ENTER' to continue" \
         ", otherwise enter 'Q' to quit: ").strip().upper()
         if(final == 'Q'):
-            # print("Final data frame will now be saved in the /data folder.")
-            # base_dir = os.path.dirname(os.path.dirname(__file__))
-            # data_dir = os.path.join(base_dir, "data")
-            # export_path = os.path.join(data_dir, "final_exported_dataset.xlsx")
-
-            # # df = df.set_index(['Community Code', 'Year', 'Month'])
-            # df.to_excel(export_path, index=False)
-            # print(f"Final dataset exported to {export_path}")
             break
-
-    print("Thank you for Using the Calgary Crime Statistics Visualizer.")
+    
+    final_save = input("\nWould you like to export the indexed crime dataframe to an excel?" \
+    " (Y/N) (Note this may take over 10 minutes): ").strip().upper()
+    if (final_save == 'Y'):
+        export_to_excel(df, filename='calgary_crime_data.xlsx', sheet_name='Sheet1')
+        
+    print("\nThank you for Using the Calgary Crime Statistics Visualizer.")
     print("-----------------------------------------------------------------------------------------")
 
 if __name__ == "__main__":
