@@ -16,12 +16,12 @@ The program primarily uses the Calgary **Community Crime Statistics** Dataset [1
 
 Users interact with the program through a command-line interface (CLI) where they are prompted to:
 
-1. Choose whether to view reference maps (sector, ward, community).
+1. Choose whether to view reference maps (sector, ward, community) [9][10].
 2. Select the type of region: Sector, Ward, or Community.
 3. Specify the exact name of the Sector, Ward, or Community.
 4. Specify the year.
 
-The user must enter a Sector, Ward, Community, and year that exists in the dataset. If there is an invalid input, the user is prompted for re-entry without terminating the program. The program is also designed to handle case-sensitive inputs or extra spaces.
+The user must enter a Sector, Ward, Community, and year that exists in the dataset. If there is an invalid input, the user is prompted for re-entry without terminating the program. The program is also designed to handle case-sensitive inputs or extra spaces. 
 
 ### Output
 
@@ -48,7 +48,10 @@ More than 3 seperate datasets are merged into a large dataset. All data is pulle
 ### Code Implementation
 The program meets this requirement because:
 1. A print_describe() function uses the describe() method to give statistics (count, mean, min, max, std. deviation, etc.) about the crime count, Crime per Capita 1000, Businesses Opened, and Median Assess Value
-2. We added two or more columns to the main dataframe. We calculated the Crime per Capita (per 1000 residents) and summed the Business count for the community.
+2. We added two or more columns to the main dataframe. We calculated the Crime per Capita (per 1000 residents) and summed the Business count for the community. The final dataframe is exported as an excel file and be be found under /data/calgary_crime_data.xlsx. A screenshot of the final dataframe is shown below:
+
+![Final Dataframe](/screenshots/excel_output.png)
+
 3. A masking operation, groupby operation, pivot table, and aggregation computation was used for a subset of the data when creating plots. For example: A masking operation is used based on the location and year, a group by operation and aggregation computation was used to get the total crime count for each month.
 
 ```python
@@ -62,7 +65,7 @@ A Pivot table was also created to easily plot the total crime count per month fo
 ```
 ### User Interface and Execution
 The program meets this requirement because the user enters two required input values. The region and the year. Invalid inputs are handled and prompted for re-entry. Screenshots are provided for the expected execution, including handling of incorrect input:
-![Execution of Program](screenshots/output.png)
+![Execution of Program](screenshots/main_output.png)
 
 Plots are show that depicts an aspect of the data. Screenshots of plots can be found in /screenshots. There are a total of four Plots, one example shown below:
 
@@ -98,8 +101,11 @@ Available: https://data.calgary.ca/browse?q=Census+by+Community+2019&sortBy=rele
 [8] The City of Calgary. 2021 Federal Census Population and Dwellings by Community [Data set]. Calgary Open Data Portal. 2025.
 Available: https://data.calgary.ca/Demographics/2021-Federal-Census-Population-and-Dwellings-by-Co/f9wk-wej9/about_data 
 
+[9] Calgary Real Estate Board, City of Calgary Community and Sector Map 2025, CREB, Calgary, AB, Canada. [Online]. 
+Available: https://www.creb.com/-/media/Public/CREBcom/Housing_Statistics/CITY_OF_CALGARY_MAP_2025.pdf. Accessed: Jun. 19, 2025.
 
-
+[10] City of Calgary, City-wide Ward and Community Codes Map (42 × 56 inches), Election and Census Office, Calgary, AB, Canada. [Online]. 
+Available: https://www.calgary.ca/content/dam/www/election/documents/ward-maps/city-wide-ward-map-poster-42x56-inches.pdf. Accessed: Jun. 19, 2025.
 
 
 
