@@ -2,8 +2,86 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import tkinter as tk
+from tkinter import ttk
 
+root = tk.Tk()
+root.withdraw()
+
+def show_regions_available(final_df, location_type):
+    """
+    Displays a popup table listing valid region values based on location_type.
+    Only 'Community' table includes a No. column for row numbering.
+
+    Parameters:
+        final_df (pd.dataframe): DataFrame with merged dataset.
+        location_type (str): 'Community', 'Ward Number', or 'Sector'
+    """
+    # Prepare filtered unique values
+    if location_type == 'Community':
+        region_df = final_df[['Community Code', 'Community']].dropna()
+        region_df = region_df.drop_duplicates().sort_values('Community')
+        columns = ('No.', 'Community Code', 'Community')
+        headings = ['No.', 'Code', 'Community']
+        values = region_df[['Community Code', 'Community']].values.tolist()
+
+    elif location_type == 'Ward Number':
+        region_df = final_df[['Ward Number']].dropna()
+        region_df = region_df[region_df['Ward Number'].apply(lambda x: str(x).isdigit())]
+        region_df['Ward Number'] = region_df['Ward Number'].astype(int)
+        region_df = region_df.drop_duplicates().sort_values('Ward Number')
+        columns = ('Ward Number',)
+        headings = ['Ward Number']
+        values = region_df.values.tolist()
+
+    elif location_type == 'Sector':
+        region_df = final_df[['Sector']].dropna()
+        region_df = region_df.drop_duplicates().sort_values('Sector')
+        columns = ('Sector',)
+        headings = ['Sector']
+        values = region_df.values.tolist()
+
+    else:
+        print(f"Invalid location type: {location_type}")
+        return
     
+    # Create Toplevel window
+    window = tk.Toplevel()
+    window.title(f"Valid {location_type}s")
+    window.geometry("800x400")
+    window.attributes("-topmost", True)
+
+    # Frame to contain Treeview and Scrollbar
+    frame = tk.Frame(window)
+    frame.pack(fill='both', expand=True)
+
+    # Grid configuration for clean layout
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
+
+    # Create Treeview
+    tree = ttk.Treeview(frame, columns=columns, show='headings')
+    for col, heading in zip(columns, headings):
+        tree.heading(col, text=heading)
+        tree.column(col, anchor='w')
+
+    for idx, row in enumerate(values, start=1):
+        if location_type == 'Community':
+            tree.insert('', 'end', values=(idx, *row))
+        else:
+            tree.insert('', 'end', values=(row[0],))
+
+    # Scrollbar and placement
+    scrollbar = ttk.Scrollbar(frame, orient='vertical', command=tree.yview)
+    tree.configure(yscrollcommand=scrollbar.set)
+
+    tree.grid(row=0, column=0, sticky='nsew')
+    scrollbar.grid(row=0, column=1, sticky='ns')
+
+    # Keeps window responsive and non-blocking
+    window.after(100, lambda: None)
+
+
 def show_maps():
     """Display two PNG images side by side using matplotlib."""
     print("\nLoading images. This may take a few seconds...\n")
@@ -27,7 +105,8 @@ def show_maps():
 
 def plot_crime_category(final_df, location, year, location_type):
     """
-    Creates two subplots: total crime count per category for the specified location and year, and a line plot of total crime count for all categories per year in Calgary.
+    Creates two subplots: total crime count per category for the specified location and year, 
+    and a line plot of total crime count for all categories per year in Calgary.
 
     Parameters:
         final_df (DataFrame): The DataFrame containing the cleaned and merged data.
@@ -74,7 +153,8 @@ def plot_crime_category(final_df, location, year, location_type):
 
 def plot_crime_count(final_df, location, year, location_type):
     """
-    Creates two subplots: total crime count per month for the specified location and year, and a line plot of total crime per month across all years in Calgary.
+    Creates two subplots: total crime count per month for the specified location and year, 
+    and a line plot of total crime per month across all years in Calgary.
 
     Parameters:
         final_df (DataFrame): The DataFrame containing the cleaned and merged data.

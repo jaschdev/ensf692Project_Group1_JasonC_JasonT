@@ -1,9 +1,11 @@
+from dataVisualizer import show_regions_available
+
 def get_location(df):
     """
     Prompts the user to select a location type (Sector, Ward, or Community) and redirects the user to another method to get the Sector, Ward, or Community.
     Parameters:
         df (pd.DataFrame): The DataFrame containing the crime statistics data.
-        """
+    """
     print("Data can be analyzed in either City Sectors, City Wards, or City Communities.")
     while True:
         location_in = input("Type 'Sector' 'Ward' or 'Community' for the type of location you wish to analyze data on: ")
@@ -26,6 +28,11 @@ def get_community(df):
     Parameters:
         df (pd.DataFrame): The DataFrame containing the crime statistics data.
     """
+
+    table = input(f"Would you like to view a list of valid Communities? (Y/N): ").strip().upper()
+    if table == 'Y':
+        show_regions_available(df, 'Community')
+
     while True:
         # formating input to be case insensitive and ignore spaces at beginnig and end
         community = input("Please enter a community by name or 3 character code to analyze data on: ").strip().upper()
@@ -68,6 +75,10 @@ def get_ward(df):
     Parameters:
         df (pd.DataFrame): The DataFrame containing the crime statistics data.
     """
+    table = input(f"Would you like to view a list of valid Wards? (Y/N): ").strip().upper()
+    if table == 'Y':
+        show_regions_available(df, 'Ward Number')
+
     while True:
         # formating input to be case insensitive and ignore spaces at beginnig and end
         ward = input("Please enter the city ward to analyze data on (i.e. 1-14): ")
@@ -88,6 +99,10 @@ def get_sector(df):
     Parameters:
         df (pd.DataFrame): The DataFrame containing the crime statistics data.
     """
+    table = input(f"Would you like to view a list of valid Sectors? (Y/N): ").strip().upper()
+    if table == 'Y':
+        show_regions_available(df, 'Sector')
+
     while True:
         # formating input to be case insensitive and ignore spaces at beginnig and end
         sector = input("Please enter the city sector to analyze data on: ").strip().upper().replace(" ", "")

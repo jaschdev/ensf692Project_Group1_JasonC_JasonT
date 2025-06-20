@@ -17,11 +17,12 @@ import os
 from dataLoader import create_dataframe
 from dataPrintAndSave import print_describe, location_year_summary
 from dataVisualizer import show_maps, plot_crime_category, plot_crime_count, plot_cc_vs_mdv, plot_cc_vs_bc
-from userInputs import get_location, get_community, get_year, get_ward, get_sector
-
+from userInputs import get_location, get_year
 
 def main():     
 
+    print("\nStarting up Calgary Crime Statistics Visualizer... \
+          \nCreating dataframe...\n")
     # Load data from CSV files and perform initial cleaning    
     df = create_dataframe()       
     # print(df.head())
@@ -33,19 +34,18 @@ def main():
     "\ntype and quantity of crime, crime per month, crime per capita 1000 vs median assessed value of the region," \
     "\nand crime count vs the number of existing businesses of the region.")
 
-    print("Based On current entire existing dataset, the following values have also been observed:")
+    print("\nBased On current entire existing dataset, the following values have also been observed:\n")
 
     print_describe(df)
 
     print("\n\nTo begin the visualizer, first select the region type.")
 
     while True:
-        map = input("If you would like a map to see what sectors, wards, and communities you may see the map png files " \
-        "\nfound in the /data folder or if you wish to see the images from here, enter 'Y' (Note: this process is slow)" \
-        "\nor hit 'ENTER' to skip: ")
-        if (map == 'Y' or map == 'y'):
+        map = input("\nIf you would like a map to see what sectors, wards, and communities you may see the map png files " \
+        "\nfound in the /data folder or if you wish to see the images from here, enter (Y/N) (Note: this process is slow): ").strip().upper()
+        if (map == 'Y'):
             show_maps()
-
+        
         location_type, location = get_location(df)
         year = get_year(df)
 
@@ -68,8 +68,8 @@ def main():
         plot_cc_vs_bc(df, location, year, location_type)
 
         final = input("Would you like to visualize data for another location and/or time? Hit 'ENTER' to continue" \
-        "If not, enter 'Q' to quit: ")
-        if(final == 'Q' or final == 'q'):
+        ", otherwise enter 'Q' to quit: ").strip().upper()
+        if(final == 'Q'):
             # print("Final data frame will now be saved in the /data folder.")
             # base_dir = os.path.dirname(os.path.dirname(__file__))
             # data_dir = os.path.join(base_dir, "data")

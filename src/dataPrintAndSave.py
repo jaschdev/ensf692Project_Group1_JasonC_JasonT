@@ -1,13 +1,12 @@
 import numpy as np
 import pandas as pd
 
-    
 def print_describe(df):
-    """    
-    Prints overall statistics of the final dataset, specifically for Crime Count, Crime per Capita 1000, Businesses Opened,
-    and Median Assessed Value.
-    
-    Parameters: 
+    """
+    Prints overall statistics of the final dataset, specifically for Crime Count, 
+    Crime per Capita 1000, Businesses Opened, and Median Assessed Value if applicable
+
+    Parameters:
         df (pd.DataFrame): The DataFrame containing the final crime data.
 
     Returns:
@@ -21,21 +20,18 @@ def print_describe(df):
         'Crime Count': 'sum',
         'Crime per Capita 1000': 'first',  # these don't change within community/month
         'Businesses Opened': 'first',
-        # 'Community Businesses Opened TD Total': 'first',
     })
     
     describe_df = describe_df.groupby(['Year', 'Month'], as_index=False).agg({
         'Crime Count': 'sum',
         'Crime per Capita 1000': 'mean',
         'Businesses Opened': 'sum',
-        # 'Community Businesses Opened TD Total': 'sum',
     })
     
     describe_stats = describe_df[['Crime Count',
-                                'Crime per Capita 1000',
-                                'Businesses Opened',
-                                #  'Community Businesses Opened TD Total',
-                                ]].describe()
+                                  'Crime per Capita 1000',
+                                  'Businesses Opened',
+                                  ]].describe()
     
     assessment_stats = df.replace([np.inf, -np.inf], np.nan)
     assessment_stats = assessment_stats.groupby(['Community'], as_index=False).agg({'Median Assessed Value': 'first'})
@@ -62,15 +58,17 @@ def print_describe(df):
 
 def location_year_summary(df, location, year, location_type):
     """
-    Generates a summary of crime statistics for the user specified location and year, including total population,
-    median assessed value, number of businesses, total crime incidents, crime per 1000 residents, and business density per 1000 residents.
-    
+    Generates a summary of crime statistics for the user specified location andyear, including total population,
+    median assessed value, number of businesses, total crime incidents, crime per 1000 residents, and business 
+    density per 1000 residents.
+
     Parameters:
         df (pd.DataFrame): The DataFrame containing the final dataset
         location (str): The name of the location to analyze (e.g., community name, ward number, or sector).
         year (int): The year of the data to analyze. (2018-2024)
         location_type (str): The type of location (e.g., 'Community', 'Ward', or 'Sector').
     """
+
     # Filter by year and location
     filtered_df = df[(df['Year'] == year) & (df[location_type] == location)]
 
